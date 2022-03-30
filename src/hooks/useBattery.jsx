@@ -2,6 +2,7 @@ import { onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 export default function useBattery() {
   const [store, setStore] = createStore({
+    isSupported: true,
     charging: false,
     chargingTime: 0,
     dischargingTime: 0,
@@ -9,7 +10,11 @@ export default function useBattery() {
   });
   onMount(async () => {
     const battery = await navigator.getBattery();
-    console.log(battery)
+
+    if (!battery) {
+      setStore("isSupported", false);
+      return;
+    }
     updateAllBatteryInfo(battery);
 
     battery.addEventListener("chargingchange", () => {
